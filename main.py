@@ -3,6 +3,9 @@ import sys
 import os
 from os import path
 
+
+
+
 #checks to see if the file exists
 def made():
     exists=path.exists("acc.json")#checks to see if the file exists and sets a boolean value
@@ -16,7 +19,6 @@ def read(accList):
     accountFile = open('acc.json',"r")#open it with read option
     first = accountFile.read(1)#check to see if the file is empty
     if not first:#if it is
-        print("No accounts")#print no accounts
         return False
         exit()
     else:#if it is not empty
@@ -91,7 +93,7 @@ def create(accList):
     age =input("How old are you: ")#get the user age
     city = input("What city do you live in: ")#get the users city
     user=input("Please create a username: ")#ask the user to create a username
-    password=input("Please create a  password: ")#ask the user to create a password
+    password=input("Please create a password: ")#ask the user to create a password
     accList["account"].append({#create a dictionary with the users information and add it to a list
         "name": name,
         "age": age,
