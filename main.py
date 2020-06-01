@@ -13,16 +13,17 @@ def read(accList):
     exists = made()#checks to see if the file exists
     if exists is False:#if it does not
         accountFile=open("acc.json", "w+")#create the file
-    else:#if it does
-        accountFile = open('acc.json',"r")#open it with read option
-        first = accountFile.read(1)#check to see if the file is empty
-        if not first:#if it is
-            print("No accounts")#print no accounts
-        else:#if it is not empty
-            accountFile.seek(0)#set the parser to character zero
-            accList=json.load(accountFile)#load the JSON into a list of dictionaries
+    accountFile = open('acc.json',"r")#open it with read option
+    first = accountFile.read(1)#check to see if the file is empty
+    if not first:#if it is
+        print("No accounts")#print no accounts
+        return False
+        exit()
+    else:#if it is not empty
+        accountFile.seek(0)#set the parser to character zero
+        accList=json.load(accountFile)#load the JSON into a list of dictionaries
+        return accList#return the list
     accountFile.close()#close the file
-    return(accList)#return the list
 
 #Writes to the JSON file
 def write(accList):
@@ -44,41 +45,48 @@ def search(user,password,accList):
         else:#if the user is not found
             return False#return the false
             break#break
+
 #acts as a login for the user
 def login(accList):
     accList=read(accList)#populate the account list
-    user=input("Please enter your username: ")#get the username
-    #To Do: Idiot Proof here
-    password=input("Please enter your password: ")#get the password
-    #To Do: Idiot Proof here
-    found=search(user,password,accList)#search for the user
-
-    if type(found)== bool:#if the return type is boolean
-        if found is False:#if the boolean is false
-            print("User not found.")#print message
-            choice=input("Press 1 to try again, 2 to create an account, or 3 to exit:\n")#allow the user to make a decision if the username is not found
-            #To Do: Idiot Proof here
-            choice=int(choice)#set the variable to int
-            if choice == 1:#if the user chooses 1
-                login(accList)#re-run this method
-            elif choice == 2:#if the user chooses 2
-                create(accList)#call the create function
-            elif choice == 3:#if the user selects 3
-                print("Goodbye")#print Goodbye
-                sys.exit()#exit the program
-            else:#if the user enters something else
-                print("Error. Not a choice. Exiting.")#WILL CHANGE DURING IDIOT PROOFING
-            #To Do: Idiot Proof here
-    elif type(found)== dict:#if the type returns as dict
-        print("User found.")#print that the user has been found
-        print("Name:\t"+found['name'])#print name
-        print("City:\t"+found['city'])#print city
-        print("Age:\t"+found['age'])#print their age
-        sys.exit()#exit the program
+    if accList == False:#if the accounts list is empty
+        print("No active accounts. Moving to account creation.")
+        create(accList)
+        exit()
+    else:
+        user=input("Please enter your username: ")#get the username
+        password=input("Please enter your password: ")#get the password
+        found=search(user,password,accList)#search for the user
+        if type(found)== bool:#if the return type is boolean
+            if found is False:#if the boolean is false
+                print("User not found.")#print message
+                choice=""
+                while choice.isdecimal() == False:
+                    choice=input("Press 1 to try again, 2 to create an account, or 3 to exit:\n")#allow the user to make a decision if the username is not found
+                choice=int(choice)#set the variable to int
+                while choice != 1 and choice != 2 and choice != 3:
+                    if choice == 1:#if the user chooses 1
+                        login(accList)#re-run this method
+                    elif choice == 2:#if the user chooses 2
+                        create(accList)#call the create function
+                    elif choice == 3:#if the user selects 3
+                        print("Goodbye")#print Goodbye
+                        sys.exit()#exit the program
+                    else:#if the user enters something else
+                        print("Error. Not a choice.")
+        elif type(found)== dict:#if the type returns as dict
+            print("User found.")#print that the user has been found
+            print("Name:\t"+found['name'])#print name
+            print("City:\t"+found['city'])#print city
+            print("Age:\t"+found['age'])#print their age
+            sys.exit()#exit the program
 
 #creates the users account
 def create(accList):
     accList=read(accList)#loads the list of accounts
+    if type(accList)==bool:#re-initialize the variable type
+        accList = {}#create a dictionary object
+        accList["account"] = []#create a list of dictionaries to hold the user accounts
     name=input("Please enter your name: ")#get the user name
     age =input("How old are you: ")#get the user age
     city = input("What city do you live in: ")#get the users city
@@ -91,20 +99,21 @@ def create(accList):
         "username": user,
         "password": password
     })
+    print("Account Created")
     write(accList)#send the list to the write method
+    exit()
 
 #this is the main function
 def main():
     accList = {}#create a dictionary object
     accList["account"] = []#create a list of dictionaries to hold the user accounts
     returning=input("Welcome to Cael's login screen.\nDo you already have an account? ")#greeting message
-    #To Do: Idiot Proof here
-    if(returning.lower()=="yes"):#if the user has an account
-       login(accList)#call the login function
-    elif(returning.lower()=="no"):#if the user does not have an account
-       create(accList)#call the create function
-    else:#if the user says something else
-       print("Sorry that's not a valid answer. Please only type \'Yes\' or \'No\'.")#tell them that they did not enter a valid answer
+    while returning.isdecimal() is True or returning.lower() != "yes" or returning.lower != "no":
+        if(returning.lower()=="yes"):#if the user has an account
+            login(accList)#call the login function
+        elif(returning.lower()=="no"):#if the user does not have an account
+            create(accList)#call the create function
+        else:#if the user says something else
+            print("Sorry that's not a valid answer. Please only type \'Yes\' or \'No\'.")#tell them that they did not enter a valid answer
     
 main()#call the main function to start the program
-#TO DO: ADD COMMENTS AND IDIOT PROOFING
